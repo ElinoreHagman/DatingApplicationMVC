@@ -1,0 +1,84 @@
+﻿@using MVC_Dating_Project.Models
+@model FriendIndexViewModel
+
+@Styles.Render("~/Content/ProfileLook.css")
+
+
+@{
+    ViewBag.Title = "Your Friends";
+}
+
+<h2>Friends</h2>
+
+<button class="btn btn-default">@Html.ActionLink("View by Category", "CategoryPage", "FriendList", null)</button>
+
+<div id="list">
+
+    @foreach (var p in Model.Profiles)
+    {
+        <div id="object">
+            <input value="@p.ProfileId" class="friendId" type="hidden">
+            <div class="object-item">
+                <img src="@Url.Content(p.ImagePath)" width="80" />
+            </div>
+            <div class="object-item">
+
+                <div class="category">
+                    <h4>@Html.ActionLink(p.FirstName + " " + p.LastName, "Index", "VisitPage", new { profileId = p.ProfileId }, null)</h4>
+                </div>
+
+                @foreach (var o in Model.Categories)
+                {
+                    if (o.TheCategorizedId.Equals(p.ProfileId))
+                    {
+                        @Html.Label("Category: " + o.CategoryName)
+                    }
+                }
+
+                <div class="category">
+                    @Html.DropDownListFor(model => model.Categories, new List<SelectListItem>
+                        {
+                        new SelectListItem() {Text = "--- Change Category ---", Value="None"},
+                        new SelectListItem() {Text = "Hottie", Value="Hottie"},
+                        new SelectListItem() {Text = "Meh", Value="Meh"},
+                        new SelectListItem() {Text = "Friend", Value="Friend"}
+                        }, new { @class = "ChosenCategory", @data_profid = p.ProfileId })
+                </div>
+
+            </div>
+
+            <div id="arbutton">
+                <div>
+                    @using (Html.BeginForm("RemoveFriend", "FriendList", new { profileId = p.ProfileId }, FormMethod.Post))
+                    {
+                        <input type="submit" value="Remove Friend" class="btn-danger" />
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@section scripts {
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            //Ändrar kategorin i databasen på profilen man ändrar på
+            $(".ChosenCategory").change(function () {
+
+                var category = $(this).val();
+                var id = $(this).attr("data-profid");
+
+                $.post('/controller/changecategory?category=' + category + '&id=' + id, function (e) {
+                    window.location.reload()
+
+                });
+            });
+
+        });
+
+    </script>
+}

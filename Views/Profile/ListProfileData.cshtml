@@ -1,0 +1,121 @@
+﻿@using MVC_Dating_Project.Models
+@model ImageIndexViewModel
+@using Microsoft.AspNet.Identity;
+
+@Styles.Render("~/Content/Site.css")
+@Styles.Render("~/Content/ProfileLook.css")
+
+@{
+    ViewBag.Title = "ListProfileData";
+}
+
+<h2>Your Profile</h2>
+<h6>@Html.ActionLink("Edit Profile", "EditProfileData", "Profile", routeValues: null, htmlAttributes: new { id = "profildata" })</h6>
+
+<div class="flex">
+    @foreach (var pro in Model.Profiles)
+    {
+        if (pro.ProfileId.Equals(User.Identity.GetUserId()))
+        {
+            <div>
+                <img src="@Url.Content(pro.ImagePath)" width="300" />
+            </div>
+            <div id="profilInfo">
+
+                @Html.Label("Name: ") @pro.FirstName @pro.LastName
+                <br />
+                @Html.Label("Gender: ") @pro.Gender
+                <br />
+                @Html.Label("Age: ") @pro.Age
+                <br />
+                @Html.Label("Sexuality: ") @pro.Sexuality
+                <br />
+            </div>
+        }
+
+    }
+
+    <div id="visitors">
+        <h4>Latest Visitors</h4>
+
+        <div id="visitBlock"></div>
+
+    </div>
+</div>
+
+
+<div class="flexMessage">
+    <div id="messages">
+
+        <h4>Wall Messages</h4>
+        @for (int i = 0; i < Model.Messages.Count; i++)
+        {
+            <input value="@Model.Messages[i].MessageId" class="id" type="hidden">
+            string message = @Model.Messages[i].MessageId.ToString();
+            <div class="message">
+
+                <button id="deletemessage" data-messageid = @message class="alert-danger deletemessage">Delete Message</button>
+
+                <h3>@Model.Messages[i].Author.FirstName @Model.Messages[i].Author.LastName</h3>
+
+                <p>@Model.Messages[i].MessageText</p>
+
+                <h5>@Model.Messages[i].Date</h5>
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<div id="popup">
+    <div id="field">
+        <input id="hiddenmessage" type="hidden">
+        <h3>Are you sure you want to delete this message?</h3>
+        <div id="buttonsmess"><button id="yesbtn">Yes</button> <button id="nobtn">No</button></div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script type="text/javascript">
+
+        //Tar fram en "pop-up ruta" när man väljer att radera ett meddelande
+        $(".deletemessage").click(function () {
+            var message = $(this).attr("data-messageid");
+            document.getElementById("popup").style.display = "block";
+            $('#hiddenmessage').val(message); 
+        });
+
+        $("#nobtn").click(function () {
+            document.getElementById("popup").style.display = "none";
+        });
+
+        // Anropar metod som tar bort meddelandet ifråga
+        $("#yesbtn").click(function () {
+            var message = $("#hiddenmessage").val();
+            $.post('/controller/deletemessage?messageid=' + message, function (e) {
+                window.location.reload()
+            });
+        });
+
+
+        $(function () {
+
+            function update() {
+                //Hämtar de profiler som har besökt användarens sida och visar dem
+                $.get('/controller/getvisits', function (visits) {
+
+                    visits.forEach(function (visit) {
+                        var p = $('<div class="' + (visit.FirstName) + '"></div>');
+                        p.append('<p>' + visit.FirstName + ' ' + visit.LastName + '</p>');
+                        $('#visitBlock').append(p);
+
+                    });
+                });
+            }
+            update();
+        });
+
+    </script>
+}

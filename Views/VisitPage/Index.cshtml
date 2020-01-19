@@ -1,0 +1,148 @@
+﻿@using MVC_Dating_Project.Models
+@using Microsoft.AspNet.Identity;
+@model ChosenProfileView
+
+@Styles.Render("~/Content/ProfileLook.css")
+
+@{
+    ViewBag.Title = "Profil för " + @Model.Profile.FirstName + " " + @Model.Profile.LastName;
+}
+<input value="@Model.Profile.ProfileId" id="id" name="id" type="hidden">
+<div class="flex">
+
+    <div>
+        @if (Model.Profile.ImagePath != null)
+        {
+            <img src="@Url.Content(Model.Profile.ImagePath)" width="300" />
+        }
+    </div>
+
+    <div id="profilInfo">
+
+        <div id="request">
+            <!-- #region Send Friend Request Area -->
+
+            @if (Model.Relation == null && Model.Requests == null && Model.SentRequest == null)
+            {
+                using (Html.BeginForm("SendRequest", "VisitPage", FormMethod.Get))
+                {
+                    <input type="submit" value="Send Friend Request" class="btn btn-primary" />
+                }
+            }
+
+            @if (Model.Relation == null && Model.Requests != null)
+            {
+                <p>@Html.ActionLink("You have a request from " + Model.Profile.FirstName, "Index", "Request", routeValues: null, htmlAttributes: new { id = "frienddata" })</p>
+            }
+
+            @if (Model.Relation == null && Model.SentRequest != null)
+            {
+                <p><input type="submit" value="Pending Friend Request" class="btn btn-success" disabled="disabled" /></p>
+            }
+
+            <!-- #endregion -->
+
+        <div id="compability">
+            <button id="checkcompbtn" class="btn">Check Compability</button>
+
+            <div id="resultBlock"></div>
+
+        </div>
+
+        </div>
+
+        <h2>@Model.Profile.FirstName @Model.Profile.LastName</h2>
+
+
+        <p><strong>Age:</strong> @Model.Profile.Age</p>
+        <p><strong>Gender:</strong> @Model.Profile.Gender</p>
+        <p><strong>Orientation:</strong> @Model.Profile.Sexuality</p>
+    </div>
+
+</div>
+
+<div class="flexMessage">
+
+    <div id="messageform">
+        @if (Model.Relation != null)
+        {
+            using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <h4>Write a message on the wall</h4>
+
+                <textarea name="text" cols="100" rows="5" id="inputText"></textarea>
+                <br />
+                <button type="button" id="SendMessage">Send</button>
+            }
+        }
+        else
+        {
+            <p>Only friends can write each other messages.</p>
+        }
+    </div>
+
+    <div id="messages">
+        <h4>Wall Messages</h4>
+        @for (int i = 0; i < Model.personalMessages.Count; i++)
+        {
+            <div class="message">
+                <h3>@Model.personalMessages[i].Author.FirstName @Model.personalMessages[i].Author.LastName wrote:</h3>
+                <p>@Model.personalMessages[i].MessageText</p>
+
+                <h5>@Model.personalMessages[i].Date</h5>
+            </div>
+        }
+
+    </div>
+</div>
+
+@section scripts {
+
+    <script type="text/javascript">
+
+        //Laddar in de fem senaste besökarna
+        window.onload = function () {
+            var profileid = $("#id").val();
+            $.post('/controller/insertvisit?profileid=' + profileid, function (e) { });
+        };
+
+        // Kör metod som kollar om man matchar med personen
+        $("#checkcompbtn").click(function () {
+            document.getElementById("resultBlock").style.display = "block";
+            var id = $("#id").val();
+            $('#resultBlock').text("");
+            $.get('/controller/checkcomp?profileid=' + id, function (visits) {
+
+                if (visits == true) {
+                    $('#resultBlock').append("<strong>You matched!</strong>");
+                } else {
+                    $('#resultBlock').append("<strong>No Match Unfortunately..</strong>");
+                }
+                $('#resultBlock').append("<p>------</p>");
+                $('#resultBlock').append("<h5>(Based on gender and preferences)</h5>");
+            });
+        });
+
+        $(document).ready(function () {
+
+            // Skickar iväg meddelandet man skrivit
+            $("#SendMessage").click(function () {
+                var message = $("#inputText").val();
+                var id = $("#id").val();
+
+                if (message != "") {
+
+                    $.post('/controller/addmessage?textObj=' + message + '&recieverObj=' + id, function (e) {
+                        window.location.reload()
+
+                    });
+
+                }
+            });
+        });
+
+    </script>
+}
+

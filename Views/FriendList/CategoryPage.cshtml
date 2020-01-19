@@ -1,0 +1,82 @@
+﻿@using MVC_Dating_Project.Models
+@model FriendIndexViewModel
+@Styles.Render("~/Content/ProfileLook.css")
+
+<h2>List Friends By Category</h2>
+
+<button class="btn btn-default">@Html.ActionLink("Go Back", "Index", "FriendList", null)</button>
+<hr />
+
+
+@using (Html.BeginForm("ReturnItems", "FriendList", FormMethod.Post, new { id = "form" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="radiobuttons">
+
+        <div class="radioContent">
+            @Html.RadioButtonFor(model => model.Category, "Hottie", new { @class = "radio" })
+            <p>@Html.Label("Hottie")</p>
+        </div>
+        <div class="radioContent">
+
+            @Html.RadioButtonFor(model => model.Category, "Meh", new { @class = "radio" })
+            <p>@Html.Label("Meh")</p>
+        </div>
+
+        <div class="radioContent">
+
+            @Html.RadioButtonFor(model => model.Category, "Friend", new { @class = "radio" })
+            <p>@Html.Label("Friend")</p>
+        </div>
+
+
+    </div>
+}
+
+<hr />
+
+<h3>Category: @Model.Category</h3>
+
+<div id="list">
+    @foreach (var p in Model.Profiles)
+    {
+        <div id="object">
+            <input value="@p.ProfileId" class="friendId" type="hidden">
+            <div class="object-item">
+                <img src="@Url.Content(p.ImagePath)" width="70" />
+            </div>
+            <div class="object-item">
+
+                <div class="category">
+                    <h4>@Html.ActionLink(p.FirstName + " " + p.LastName, "Index", "VisitPage", new { profileId = p.ProfileId }, null)</h4>
+                </div>
+
+            </div>
+
+            <div id="arbutton">
+                <div>
+                    @using (Html.BeginForm("RemoveFriend", "FriendList", new { profileId = p.ProfileId }, FormMethod.Post))
+                    {
+                        <input type="submit" value="Remove Friend" class="btn-danger" />
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+
+    <script type="text/javascript">
+
+        //Visar profiler som tillhör kategorin man klickar på, när man klickar på knappen
+        $(function () {
+            $('#form .radio').change(function () {
+                $('#form').submit();
+            });
+        });
+
+    </script>
+
+}

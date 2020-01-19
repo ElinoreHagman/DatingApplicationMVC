@@ -1,0 +1,68 @@
+﻿@using MVC_Dating_Project.Models
+@model ProfileIndexViewModel
+
+@Styles.Render("~/Content/MainPage.css")
+@Styles.Render("~/Content/ProfileLook.css")
+
+@{
+    ViewBag.Title = "Home Page";
+    var totalProfiles = Model.Profiles.Count();
+}
+
+@if (Request.IsAuthenticated)
+{
+    <div id="frontbtn">
+        <button class="btn">@Html.ActionLink("Search Up Your Matches", "Index", "MatchMaker")</button>
+    </div>
+}
+
+@if (!Request.IsAuthenticated)
+{
+    <div class="jumbotron">
+        <h1>University Dating</h1>
+        <p class="lead">Searching for a mate? Look no further! On Uni Dating you will find loooove!</p>
+        <span>@Html.ActionLink("Register Today", "Register", "Account", new { area = "" }, new { @class = "btn btn-primary btn-lg" })</span>
+    </div>
+}
+<h2>Some Of Our Users</h2>
+<hr />
+
+@if (Model.Profiles.Count == 0)
+{
+    <h3 style="text-align: center">No members to show :(</h3>
+}
+
+
+<div class="row">
+
+    @{
+        var amountImages = Model.Profiles.Count;
+        int limit;
+
+        if (amountImages > 3)
+        {
+            limit = 3;
+        }
+        else
+        {
+            limit = amountImages;
+        }
+    }
+
+    @for (int i = 0; i < limit; i++)
+    {
+        <div class="col-md-4">
+
+            <h3>@Model.Profiles[i].FirstName @Model.Profiles[i].LastName</h3>
+            <div id="imgpres"><img src="@Url.Content(Model.Profiles[i].ImagePath)" height="200" /></div>
+            <span>@Model.Profiles[i].Gender</span> |
+            <span>@Model.Profiles[i].Age y/o</span> |
+            <span>@Model.Profiles[i].Sexuality</span>
+            <br />
+
+            <button class="btn-toolbar">@Html.ActionLink("Visit Profile", "Index", "VisitPage", new { profileId = @Model.Profiles[i].ProfileId }, null)</button>
+
+        </div>
+    }
+
+</div>

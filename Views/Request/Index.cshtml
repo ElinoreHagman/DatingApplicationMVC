@@ -1,0 +1,42 @@
+﻿@using MVC_Dating_Project.Models
+@model ProfileIndexViewModel
+
+@Styles.Render("~/Content/ProfileLook.css")
+@{
+    ViewBag.Title = "Friend Requests";
+}
+
+<h2>Friend Requests</h2>
+
+<div id="list">
+
+    @foreach (var profil in Model.Profiles)
+    {
+        <div id="object">
+
+            <div class="object-item">
+                <img src="@Url.Content(profil.ImagePath)" width="80" />
+            </div>
+
+            <div class="object-item">
+                <h4> @Html.ActionLink(profil.FirstName + " " + profil.LastName, "Index", "VisitPage", new { profileId = profil.ProfileId }, null)</h4>
+            </div>
+
+            <div id="arbutton">
+                <div>
+                    @using (Html.BeginForm("Accept", "Request", new { profileId = profil.ProfileId }, FormMethod.Post))
+                    {
+                        <input type="submit" value="Accept" class="btn-success" />
+                    }
+                </div>
+
+                <div>
+                    @using (Html.BeginForm("Dismiss", "Request", new { profileId = profil.ProfileId }, FormMethod.Post))
+                    {
+                        <input type="submit" value="Dismiss" class="btn-danger" />
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

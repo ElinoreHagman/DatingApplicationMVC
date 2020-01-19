@@ -1,0 +1,199 @@
+﻿@model MVC_Dating_Project.Models.Profile
+
+@Styles.Render("~/Content/ProfileLook.css")
+
+@{
+    ViewBag.Title = "EditProfileData";
+}
+
+<h2>Edit Profile</h2>
+@if (!Model.IsActive)
+{
+    <h3 class="alert-danger">You need to reactivate your account to use the site's functions.</h3>
+}
+<hr />
+
+<div id="editprofile">
+
+    <div class="sectionedit">
+
+        @using (Html.BeginForm("EditProfileData", "Profile", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <h4>Profile Information</h4>
+                <hr />
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(model => model.ProfileId)
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Age, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.Age, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Sexuality, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.RadioButtonFor(model => model.Sexuality, "Heterosexual")
+                        @Html.Label("Heterosexual")
+                        <br />
+                        @Html.RadioButtonFor(model => model.Sexuality, "Homosexual")
+                        @Html.Label("Homosexual")
+                        <br />
+                        @Html.RadioButtonFor(model => model.Sexuality, "Bisexual")
+                        @Html.Label("Bisexual")
+                        @Html.ValidationMessageFor(model => model.Sexuality, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.RadioButtonFor(model => model.Gender, "Male")
+                        @Html.Label("Male")
+                        <br />
+                        @Html.RadioButtonFor(model => model.Gender, "Female")
+                        @Html.Label("Female")
+                        <br />
+                        @Html.RadioButtonFor(model => model.Gender, "Non-binary")
+                        @Html.Label("Non-binary")
+                        <br />
+                        @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="sectionedit">
+
+        @using (Html.BeginForm("UploadPhoto", "Profile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <h4>Profile Picture</h4>
+                <hr />
+                <div id="editimg">
+                    <img src="@Url.Content(Model.ImagePath)" width="200" />
+                    <h6>Current Photo</h6>
+                </div>
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ImagePath, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.ImagePath, new { htmlAttributes = new { @class = "form-control", @type = "file" } })
+                        @Html.ValidationMessageFor(model => model.ImagePath, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Upload" class="btn btn-primary" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10 text-success">
+                        @ViewBag.FileStatus
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div id="deactivate">
+
+    <div class="editbuttons">
+        @using (Html.BeginForm("DownloadProfile", "Profile", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <input type="submit" value="Export Profile" class="btn btn-warning" onclick="return confirm('Clock OK to download a XML-file with your profile data.')" />
+
+        }
+    </div>
+
+    <div class="editbuttons">
+        <input value="@Model.ProfileId" id="userid" name="id" type="hidden">
+        @if (Model.IsActive)
+        {
+            <input type="button" id="removebtn" value="Deactivate Account" class="btn btn-danger" />
+        }
+        else
+        {
+            <input type="button" id="reactivatebtn" value="Reactivate Account" class="btn btn-success" />
+        }
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("#removebtn").click(function () {
+                var userid = $("#userid").val();
+
+                if (confirm("Click OK to deactivate your account.")) {
+
+                    $.post('/controller/removeaccount?userid=' + userid, function (e) {
+                        document.getElementById('logoutForm').submit()
+
+                    });
+
+                } else {
+                    //Nothing
+                }
+            });
+
+            $("#reactivatebtn").click(function () {
+                var userid = $("#userid").val();
+
+                if (confirm("Are you sure you want to activate your account?")) {
+
+                    $.post('/controller/activateaccount?userid=' + userid, function (e) {
+                        window.location.reload()
+
+                    });
+
+                } else {
+                    //Nothing
+                }
+            });
+        });
+
+    </script>
+
+
+}

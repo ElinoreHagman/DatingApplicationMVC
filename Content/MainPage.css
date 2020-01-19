@@ -1,0 +1,56 @@
+﻿body {
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.col-md-4 {
+    background-color: white;
+    margin: 5px;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+    .col-md-4 h2 {
+        margin-top: 0;
+    }
+
+#imgpres img {
+    display: block;
+    margin: auto;
+}
+
+h3 a:hover {
+    text-decoration: none;
+}
+
+h2 {
+    text-align: center;
+}
+
+#frontbtn {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 30px;
+}
+
+#frontbtn button {
+    font-size: 24px;
+    padding: 10px;
+    box-shadow: 1px 1px 3px #999999;
+    border: 1px solid #ae7c86;
+    background-image: url("../SiteImages/hearts.png");
+}
+
+button a {
+    color: black;
+}
+
+button a:hover {
+    color: black;
+    text-decoration: none;
+}

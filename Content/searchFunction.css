@@ -1,0 +1,26 @@
+﻿body {
+}
+
+#searchform {
+    margin-top: 12px;
+}
+
+#friReq {
+    color: #32bf2c;
+    padding-top: 15px;
+    padding-right: 15px;
+}
+
+    #friReq a {
+        color: white;
+    }
+
+#friReq a:hover {
+    text-decoration: none;
+    color: white;
+}
+
+#defaultText {
+    
+    font-size: 12px;
+}
